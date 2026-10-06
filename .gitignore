@@ -1,0 +1,25 @@
+# Dependencies and generated build output (including vendored workspaces)
+node_modules/
+out/
+dist/
+release/
+.artifacts/
+
+# Local runtime state, backups and credentials
+.native-pi-backups/
+.pi/
+*.log
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Private handoff evidence and internal development history; retain locally
+/docs/handoffs/
+/docs/superpowers/
+/ORCHESTRATOR.md
+
+.DS_Store

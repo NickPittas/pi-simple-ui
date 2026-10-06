@@ -1,0 +1,3 @@
+#!/bin/sh
+# Use the repository's pinned pnpm without installing a global pnpm executable.
+exec npx --yes pnpm@10.34.6 "$@"

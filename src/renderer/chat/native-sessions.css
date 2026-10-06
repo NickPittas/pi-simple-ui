@@ -1,0 +1,25 @@
+/* Selectors are prefixed with .chat-session-list to out-rank legacy rules in styles/app.css. */
+.chat-session-list .ns { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.chat-session-list .ns-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 0 2px; }
+.chat-session-list .ns-label { display: inline-flex; align-items: center; gap: 6px; color: var(--c-subtext0); font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.1px; text-transform: uppercase; }
+.chat-session-list .ns-count { padding: 0 6px; border-radius: 8px; color: var(--c-subtext1); background: var(--c-surface0); font-size: 9px; letter-spacing: 0; line-height: 15px; }
+.chat-session-list .ns-new { flex: none; min-height: 26px; padding: 0 10px; border: 1px solid var(--c-surface1); border-radius: 6px; color: var(--c-text); background: var(--c-surface0); font-family: var(--font-ui); font-size: 11px; font-weight: 600; cursor: pointer; }
+.chat-session-list .ns-new:hover:not(:disabled) { background: var(--c-surface1); }
+.chat-session-list .ns-new:disabled, .chat-session-list .ns-row:disabled { opacity: .55; cursor: default; }
+.chat-session-list .ns-search { width: 100%; min-width: 0; height: 28px; padding: 0 9px; border: 1px solid var(--c-surface1); border-radius: 6px; color: var(--c-text); background: var(--c-mantle); font-family: var(--font-ui); font-size: 11px; }
+.chat-session-list .ns-search::placeholder { color: var(--c-overlay0); }
+.chat-session-list .ns-new:focus-visible, .chat-session-list .ns-search:focus-visible, .chat-session-list .ns-row:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 1px; }
+.chat-session-list .ns .ns-note { margin: 0; padding: 2px 4px; color: var(--c-overlay1); font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+.chat-session-list .ns .ns-error { color: var(--c-subtext0); }
+.chat-session-list .ns ul.ns-list { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.chat-session-list .ns li { min-width: 0; }
+.chat-session-list .ns li > button.ns-row { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 2px; width: 100%; min-width: 0; min-height: 44px; padding: 6px 10px 6px 12px; border: 0; border-radius: 6px; color: var(--c-text); background: transparent; text-align: left; cursor: pointer; }
+.chat-session-list .ns li > button.ns-row:hover:not(:disabled) { background: var(--c-surface0); }
+.chat-session-list .ns li > button.ns-row[aria-current='page'] { background: var(--c-surface0); cursor: default; }
+.chat-session-list .ns li > button.ns-row[aria-current='page']::before { content: ''; position: absolute; left: 0; top: 7px; bottom: 7px; width: 3px; border-radius: 2px; background: var(--c-blue); }
+.chat-session-list .ns .ns-title { display: flex; align-items: baseline; min-width: 0; font-family: var(--font-ui); font-size: 12px; line-height: 1.3; }
+.chat-session-list .ns .ns-title-text { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-session-list .ns-icon { font-family: var(--font-mono); font-style: normal; flex: none; margin-right: 5px; color: var(--c-overlay1); }
+.chat-session-list .ns .ns-meta { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--c-overlay2); font-family: var(--font-mono); font-size: 9px; line-height: 1.3; }
+.chat-session-list .ns .ns-meta-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-session-list .ns .ns-badge { flex: none; padding: 0 5px; border: 1px solid var(--c-surface2); border-radius: 4px; color: var(--c-subtext0); font-size: 8px; line-height: 13px; text-transform: uppercase; letter-spacing: .5px; }

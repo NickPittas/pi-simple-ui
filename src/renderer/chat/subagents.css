@@ -1,0 +1,52 @@
+.chat-subagent-open { margin-left: auto; margin-right: 8px; font: inherit; font-size: 12px; color: var(--c-teal); background: transparent; border: 1px solid var(--c-teal); border-radius: 6px; padding: 2px 8px; cursor: pointer; }
+.chat-subagent-open:hover, .chat-subagent-open:focus-visible { background: var(--c-surface0); }
+.conversation-host { position: relative; min-width: 0; }
+.conversation-split { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: row; overflow: hidden; }
+.conversation-main { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.subagent-panel { flex: 0 0 min(46%, 640px); min-width: 320px; min-height: 0; display: flex; flex-direction: column; border-left: 2px solid var(--c-teal); background: var(--c-mantle); overflow: hidden; }
+.subagent-backdrop { display: none; }
+@media (max-width: 959px) {
+  .subagent-backdrop { display: block; position: absolute; inset: 0; background: var(--c-crust); opacity: .6; z-index: 20; border: 0; padding: 0; }
+  .subagent-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(100%, 560px); min-width: 0; z-index: 21; }
+}
+.subagent-viewer { display: flex; flex-direction: column; flex: 1; min-height: 0; min-width: 0; padding: 12px 14px; gap: 6px; color: var(--c-text); font-family: var(--font-ui); }
+.subagent-viewer-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.subagent-viewer-title { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.subagent-viewer-title h2 { margin: 0; font-size: 15px; overflow-wrap: anywhere; }
+.subagent-badge { font-size: 11px; color: var(--c-teal); border: 1px solid var(--c-teal); border-radius: 999px; padding: 1px 8px; }
+.subagent-status { font-size: 11px; border-radius: 999px; padding: 1px 8px; background: var(--c-surface0); color: var(--c-subtext1); }
+.subagent-status-running { color: var(--c-yellow); }
+.subagent-status-completed { color: var(--c-green); }
+.subagent-status-error { color: var(--c-red); }
+.subagent-close { font: inherit; font-size: 12px; color: var(--c-text); background: var(--c-surface0); border: 1px solid var(--c-surface1); border-radius: 6px; padding: 3px 10px; cursor: pointer; flex: none; }
+.subagent-close:hover, .subagent-close:focus-visible { background: var(--c-surface1); }
+.subagent-note { margin: 0; font-size: 12px; color: var(--c-subtext0); }
+.subagent-file { display: block; margin: 0; font-family: var(--font-mono); font-size: 11px; color: var(--c-overlay2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.subagent-notice { margin: 0; font-size: 12px; color: var(--c-yellow); }
+.subagent-error { margin: 0; font-size: 12px; color: var(--c-red); overflow-wrap: anywhere; }
+.subagent-error[role="status"] { color: var(--c-subtext1); }
+.subagent-empty { margin: 8px 0; font-size: 13px; color: var(--c-subtext0); }
+.subagent-body { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.subagent-body .conversation-surface { min-height: 0; }
+.subagent-list-items { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; min-height: 0; }
+.subagent-list-item { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 4px; font: inherit; color: var(--c-text); background: var(--c-raised); border: 1px solid var(--c-surface0); border-left: 3px solid var(--c-teal); border-radius: 6px; padding: 8px 10px; cursor: pointer; min-width: 0; }
+.subagent-list-item:hover, .subagent-list-item:focus-visible, .subagent-list-item-active { background: var(--c-surface0); }
+.subagent-list-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.subagent-back { align-self: flex-start; font: inherit; font-size: 12px; color: var(--c-teal); background: transparent; border: 1px solid var(--c-teal); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+.subagent-back:hover, .subagent-back:focus-visible { background: var(--c-surface0); }
+.subagent-viewer-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.subagent-updated { font-size: 11px; color: var(--c-overlay2); white-space: nowrap; }
+.subagent-close:disabled { opacity: .6; cursor: default; }
+.subagent-viewer-title h2:focus { outline: none; }
+.subagent-viewer-title h2:focus-visible { outline: 1px solid var(--c-teal); }
+
+.subagent-filter { display: flex; align-items: center; gap: 8px; }
+.subagent-filter-toggle { font: inherit; font-size: 12px; color: var(--c-text); background: var(--c-surface0); border: 1px solid var(--c-surface1); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+.subagent-filter-toggle:hover, .subagent-filter-toggle:focus-visible { background: var(--c-surface1); }
+.subagent-filter-toggle[aria-pressed="true"] { color: var(--c-teal); border-color: var(--c-teal); }
+.subagent-state-running { color: var(--c-teal); animation: subagent-pulse 1.4s ease-in-out infinite; }
+.subagent-state-finished { color: var(--c-green); }
+.subagent-state-failed { color: var(--c-red); }
+.subagent-state-unknown { color: var(--c-overlay2); }
+@keyframes subagent-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .subagent-state-running { animation: none; } }

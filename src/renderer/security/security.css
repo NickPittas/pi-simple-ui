@@ -1,0 +1,35 @@
+.safe-markdown { color: var(--ink, var(--c-text)); font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.safe-markdown > :first-child { margin-top: 0; }
+.safe-markdown > :last-child { margin-bottom: 0; }
+.safe-markdown p { margin: 0 0 12px; }
+.safe-markdown-heading { margin: 20px 0 9px; line-height: 1.3; }
+.safe-markdown h1 { font-size: 1.55em; }.safe-markdown h2 { font-size: 1.35em; }.safe-markdown h3 { font-size: 1.15em; }
+.safe-markdown code, .safe-markdown-code code { font-family: var(--font-mono); font-size: .9em; }
+.safe-markdown :not(pre) > code { padding: 2px 5px; border: 1px solid var(--line, var(--c-surface0)); border-radius: 4px; background: var(--c-mantle); }
+.safe-markdown-code { overflow: auto; margin: 10px 0 14px; border: 1px solid var(--line, var(--c-surface0)); border-radius: 7px; background: var(--c-mantle); }
+.safe-markdown-code header { display: flex; justify-content: space-between; padding: 6px 10px; border-bottom: 1px solid var(--line, var(--c-surface0)); color: var(--muted, var(--c-subtext0)); font-size: 10px; }
+.safe-markdown-code header button, .safe-markdown-expand, .safe-markdown-link { border: 0; padding: 0; color: var(--green, var(--c-green)); background: none; font: inherit; cursor: pointer; }
+.safe-markdown-code code { display: block; padding: 11px; white-space: pre; }
+.safe-markdown-link { text-decoration: underline; text-underline-offset: 2px; }
+.safe-markdown blockquote { margin: 10px 0; padding: 2px 13px; border-left: 3px solid var(--c-surface1); color: var(--c-subtext1); }
+.safe-markdown ul, .safe-markdown ol { padding-left: 24px; }
+.safe-markdown li + li { margin-top: 3px; }
+.safe-markdown hr { border: 0; border-top: 1px solid var(--line, var(--c-surface0)); margin: 16px 0; }
+.safe-markdown-table-wrap { max-width: 100%; overflow-x: auto; margin: 12px 0; }
+.safe-markdown table { border-collapse: collapse; font-size: 11px; }
+.safe-markdown th, .safe-markdown td { padding: 6px 9px; border: 1px solid var(--line, var(--c-surface0)); text-align: left; }
+.safe-markdown th { background: var(--c-mantle); }
+.safe-markdown-expand { margin-top: 7px; font-size: 11px; }
+.attachment-preview { min-width: 0; display: flex; align-items: flex-start; gap: 12px; padding: 10px; border: 1px solid var(--line, var(--c-surface0)); border-radius: 8px; background: var(--paper, var(--c-base)); }
+.attachment-thumbnail { width: 100px; height: 76px; flex: 0 0 auto; object-fit: cover; border-radius: 5px; background: var(--c-surface1); }
+.attachment-icon { width: 54px; height: 54px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid var(--line, var(--c-surface0)); border-radius: 7px; color: var(--green, var(--c-green)); background: var(--c-mantle); font: 10px var(--font-mono); }
+.attachment-details { min-width: 0; flex: 1; display: grid; gap: 4px; font-size: 11px; }
+.attachment-details strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attachment-details > span, .attachment-note { margin: 0; color: var(--muted, var(--c-subtext0)); font-size: 10px; }
+.attachment-text-snippet { max-height: 220px; overflow: auto; margin: 6px 0 0; padding: 8px; border-radius: 5px; background: var(--c-mantle); font: 10px/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.attachment-actions { display: flex; gap: 6px; }
+.attachment-actions button, .attachment-action { min-height: 28px; padding: 0 8px; border: 1px solid var(--line, var(--c-surface0)); border-radius: 5px; color: var(--green, var(--c-green)); background: transparent; font-size: 10px; cursor: pointer; }
+.attachment-action { width: fit-content; }
+.attachment-preview button:focus-visible, .safe-markdown button:focus-visible { outline: 3px solid var(--c-green); outline-offset: 2px; }
+@media (max-width: 520px) { .attachment-preview { flex-wrap: wrap; }.attachment-actions { margin-left: auto; } }
+@media (prefers-reduced-motion: reduce) { .safe-markdown *, .attachment-preview * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }

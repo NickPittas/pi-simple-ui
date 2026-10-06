@@ -1,0 +1,7 @@
+packages:
+  - .
+  - vendor/pi/packages/*
+  - vendor/pi-subagents
+  - vendor/pi-subagents-nicobailon
+
+linkWorkspacePackages: true

@@ -1,0 +1,10 @@
+/* The MCP page reuses the agent-definitions layout (.ad-*); only MCP-specific additions live here. */
+.mcp-page { min-width: 0; }
+.mcp-owner { color: var(--c-subtext1); }
+.mcp-badge { flex: none; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--c-surface1); color: var(--c-subtext1); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.mcp-enable { display: flex; align-items: center; gap: 8px; flex: none; }
+.mcp-actions { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.mcp-kv { display: grid; gap: 8px; }
+.mcp-kv-row { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(160px, 2fr) auto auto; gap: 8px; align-items: center; }
+.mcp-page code { font-family: var(--font-mono); font-size: 11px; color: var(--c-subtext1); }
+@media (max-width: 640px) { .mcp-kv-row { grid-template-columns: minmax(0, 1fr); } }

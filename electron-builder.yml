@@ -1,0 +1,52 @@
+appId: io.pi.desktop-companion
+productName: Pi Desktop
+asar: true
+nodeGypRebuild: false
+npmRebuild: true
+nativeRebuilder: sequential
+asarUnpack:
+  # Electron's sandboxed preload must be loaded from a real filesystem path.
+  - out/preload/**
+  - "**/node-pty/**"
+directories:
+  output: release
+files:
+  - out/**/*
+  - package.json
+  - "!**/.native-pi-backups/**"
+  - "!**/.pi/**"
+  - "!**/.env*"
+  - "!**/*.log"
+  - "!**/*.map"
+  # Keep only electron-builder's collected node_modules workspace packages: out/main
+  # imports the Pi SDK by package name, and SDK resource helpers resolve from that package root.
+  # Do not also include vendor workspace paths, which would ship duplicate package trees.
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+  executableName: pi-desktop
+  category: Development
+  maintainer: NickPittas <NickPittas@users.noreply.github.com>
+  artifactName: Pi-Desktop-${version}-${arch}.${ext}
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - target: dmg
+      arch:
+        - arm64
+        - x64
+    - target: zip
+      arch:
+        - arm64
+        - x64
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  hardenedRuntime: true
+  entitlements: entitlements.mac.plist
+  entitlementsInherit: entitlements.mac.plist
+  # Unsigned local builds only. Releases require Developer ID signing and notarization.
+  identity: null
