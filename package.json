@@ -4,7 +4,7 @@
   "description": "A desktop companion for native Pi coding-agent sessions.",
   "author": "NickPittas <NickPittas@users.noreply.github.com>",
   "homepage": "https://github.com/NickPittas/pi-simple-ui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "main": "out/main/index.js",

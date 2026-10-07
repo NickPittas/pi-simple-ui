@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DesktopBridge, RuntimeScope } from '../../shared/ipc-contracts.ts';
 import { InlineWorkerConversations } from '../workers/InlineWorkerConversations.tsx';
 import { useNativeConversations } from './useNativeConversations.ts';
 import { selectMessages, selectStatus } from './native-conversation.ts';
+import { EXTENSION_UI_IPC } from '../../shared/extension-ui.ts';
+import { extendCommandNoticeWindow, isCommandNoticeWindowOpen, openCommandNoticeWindow } from './command-notice-window.ts';
 import type { ComposerDraft } from './Composer';
 import { Composer } from './Composer';
 import { Conversation, type ConversationLifecycle } from './Conversation';
@@ -48,6 +50,20 @@ function NativeConversationHost({ bridge, scope, onNavigate, showSubagentsToken,
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [toolsExpanded, setToolsExpanded] = useState(true);
   const composerRef = useRef<HTMLDivElement>(null);
+  // Session-scoped, never persisted: results of slash commands shown inline after the last message at arrival.
+  const [notices, setNotices] = useState<ReadonlyArray<{ readonly id: string; readonly afterId: string | null; readonly level: 'info' | 'warning' | 'error'; readonly message: string; readonly at: number }>>([]);
+  const lastMessageId = useRef<string | null>(null);
+  useEffect(() => { setNotices([]); }, [state.sessionId]);
+  useEffect(() => {
+    if (!scope) return;
+    let stop: (() => void) | undefined, live = true;
+    void bridge.subscribe(EXTENSION_UI_IPC.event, scope, (event) => {
+      if (event.type !== 'notification' || !isCommandNoticeWindowOpen()) return;
+      extendCommandNoticeWindow();
+      setNotices((all) => [...all, { id: crypto.randomUUID(), afterId: lastMessageId.current, level: event.level, message: event.message, at: Date.now() }].slice(-50));
+    }).then((result) => { if (!result.ok) return; if (live) stop = result.value; else result.value(); });
+    return () => { live = false; stop?.(); };
+  }, [bridge, scope?.ownerId, scope?.generation]);
   const [panel, setPanel] = useState<SubagentPanel | null>(null);
   const [lastFile, setLastFile] = useState<string | null>(null);
   const listScrollRef = useRef(0);
@@ -60,6 +76,7 @@ function NativeConversationHost({ bridge, scope, onNavigate, showSubagentsToken,
   const onDraftChange = useCallback((_sessionId: string, nextDraft: ComposerDraft) => setDraft(nextDraft), []);
   const nativeSubmit = useCallback((text: string) => {
     setSubmitError(null);
+    if (text.trimStart().startsWith('/')) openCommandNoticeWindow();
     if (!state.sessionId) return Promise.reject(new Error('Native conversation session is not available yet.'));
     return bridge.invoke('native.pi.submit', {
       requestId: crypto.randomUUID(), sessionId: state.sessionId, sessionGeneration: state.generation, text,
@@ -75,7 +92,21 @@ function NativeConversationHost({ bridge, scope, onNavigate, showSubagentsToken,
       return result.value;
     });
   }, [bridge, scope, state.sessionId, state.generation]);
-  const messages = selectMessages(state);
+  const nativeMessages = selectMessages(state);
+  lastMessageId.current = nativeMessages.at(-1)?.id ?? null;
+  const messages = useMemo(() => {
+    if (!notices.length) return nativeMessages;
+    const out = [...nativeMessages];
+    for (const notice of notices) {
+      const at = notice.afterId === null ? -1 : out.findIndex((m) => m.id === notice.afterId);
+      const index = at < 0 && notice.afterId !== null ? out.length : at + 1;
+      // Keep notices that share an anchor in arrival order.
+      let position = index;
+      while (position < out.length && out[position].customType === 'command-notice') position++;
+      out.splice(position, 0, { id: `notice:${notice.id}`, role: notice.level === 'error' ? 'error' : 'system', content: notice.message, timestamp: notice.at, customType: 'command-notice', level: notice.level } as typeof out[number]);
+    }
+    return out;
+  }, [nativeMessages, notices]);
   const subagents = collectSubagents(messages);
   const openSubagent = useCallback((ref: SubagentRef) => { setLastFile(ref.file); setPanel({ kind: 'view', ref }); }, []);
   const backToList = useCallback(() => setPanel({ kind: 'list' }), []);

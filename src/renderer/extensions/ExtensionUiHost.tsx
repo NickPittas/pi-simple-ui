@@ -18,6 +18,7 @@ import { SemanticViewRenderer } from './adapters';
 import { useDialogA11y } from '../a11y/useDialogA11y';
 import { NativeCustomTerminal, type NativeCustomTerminalView } from './NativeCustomTerminal';
 
+import { isCommandNoticeWindowOpen } from '../chat/command-notice-window.ts';
 export type ExtensionUiTransport = Pick<DesktopBridge, 'invoke' | 'subscribe'>;
 
 export interface ExtensionUiHostProps {
@@ -156,6 +157,8 @@ export function ExtensionUiHost({ scope, transport, className, sessionId, editor
     const subscribe = async () => {
       const result = await transport.subscribe(EXTENSION_UI_IPC.event, scope, (event) => {
         if (!current) return;
+        // Slash-command results are shown inline in the conversation instead of the notice panel.
+        if (event.type === 'notification' && isCommandNoticeWindowOpen()) return;
         if (event.type === 'native-custom-opened') {
           if (event.sessionId !== latestSession.current) {
             customFeedbackRef.current('A native custom view belongs to a different or inactive session; it was not opened here.');

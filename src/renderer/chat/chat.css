@@ -12,6 +12,9 @@
 .chat-message-tool, .chat-message-tool-result { --role: var(--c-peach); background: color-mix(in srgb, var(--c-peach) 5%, var(--c-mantle)); }
 .chat-message-error { --role: var(--c-red); background: color-mix(in srgb, var(--c-red) 10%, var(--c-base)); }
 .chat-message-system { --role: var(--c-overlay1); color: var(--c-subtext0); }
+.chat-notice-info { --role: var(--c-blue); }
+.chat-notice-warning { --role: var(--c-peach); background: color-mix(in srgb, var(--c-peach) 8%, var(--c-base)); }
+.chat-notice { white-space: pre-wrap; }
 .chat-message-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
 .chat-role-badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px 2px 7px; border-radius: 999px; color: var(--role); background: color-mix(in srgb, var(--role) 14%, transparent); font-size: 11px; font-weight: 600; }
 .chat-role-icon { font-family: var(--font-mono); font-size: 12px; line-height: 1; }
