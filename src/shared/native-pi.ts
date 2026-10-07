@@ -89,6 +89,7 @@ export type NativeSessionTarget = { sessionId: string; sessionGeneration: number
 export type NativeModelChoice = { provider: string; id: string; name: string }
 export type NativeModelState = NativeSessionTarget & {
   processGeneration: number; sequence: number; model: NativeModelChoice | null; models: NativeModelChoice[]
+  allModels: NativeModelChoice[]; scoped: boolean
   thinkingLevel: NativeThinkingLevel | null; thinkingLevels: NativeThinkingLevel[]; busy: boolean
 }
 export type NativeModelStateResult = { state: NativeModelState | null; error: string | null }

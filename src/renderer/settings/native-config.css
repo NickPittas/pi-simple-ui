@@ -34,3 +34,16 @@
 .ncfg-empty { margin: 22px 0; color: var(--c-subtext0); font-size: 12px; }
 .ncfg-row:focus-visible, .ncfg-actions button:focus-visible, .ncfg-notice button:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 1px; }
 @media (max-width: 820px) { .ncfg-layout { grid-template-columns: minmax(0, 1fr); } }
+
+/* Scoped models editor */
+.smodels { display: flex; flex-direction: column; gap: 10px; padding: 8px 0 16px; }
+.smodels-bar, .smodels-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.smodels-search { flex: 1; min-width: 160px; padding: 6px 8px; background: var(--c-surface1); color: inherit; border: 1px solid var(--c-surface1); border-radius: 6px; }
+.smodels-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.smodels-col { min-width: 0; max-height: 340px; overflow: auto; border: 1px solid var(--c-surface1); border-radius: 6px; padding: 6px; }
+.smodels-col h3 { margin: 0 0 6px; font-size: 12px; opacity: .8; }
+.smodels-provider { display: flex; gap: 6px; align-items: center; font-weight: 600; margin-top: 6px; }
+.smodels-item { display: flex; gap: 6px; align-items: center; padding: 2px 0; font-family: var(--font-mono); font-size: 12px; }
+.smodels-item span { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.smodels-flag { color: var(--c-blue); font-size: 11px; }
+@media (max-width: 800px) { .smodels-cols { grid-template-columns: 1fr; } }

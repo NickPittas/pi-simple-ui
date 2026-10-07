@@ -124,10 +124,12 @@ export function isNativePiModelChoice(value: unknown): value is NativeModelChoic
 }
 
 export function isNativePiModelState(value: unknown): value is NativeModelState {
-  return isPlainRecord(value) && hasExactKeys(value, ['sessionId', 'sessionGeneration', 'processGeneration', 'sequence', 'model', 'models', 'thinkingLevel', 'thinkingLevels', 'busy'])
+  return isPlainRecord(value) && hasExactKeys(value, ['sessionId', 'sessionGeneration', 'processGeneration', 'sequence', 'model', 'models', 'allModels', 'scoped', 'thinkingLevel', 'thinkingLevels', 'busy'])
     && hasSessionTarget(value) && generation(value.processGeneration) && generation(value.sequence)
     && (value.model === null || isNativePiModelChoice(value.model))
     && Array.isArray(value.models) && isJson(value.models) && value.models.every(isNativePiModelChoice)
+    && Array.isArray(value.allModels) && isJson(value.allModels) && value.allModels.every(isNativePiModelChoice)
+    && typeof value.scoped === 'boolean'
     && (value.thinkingLevel === null || isNativeThinkingLevel(value.thinkingLevel))
     && Array.isArray(value.thinkingLevels) && isJson(value.thinkingLevels) && value.thinkingLevels.every(isNativeThinkingLevel)
     && typeof value.busy === 'boolean'

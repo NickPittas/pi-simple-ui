@@ -11,12 +11,14 @@ export function bindNativeControls(pi: ExtensionAPI, context: () => ExtensionCon
       if (typeof ctx.isIdle !== 'function' || typeof ctx.hasPendingMessages !== 'function') throw new Error('native busy state unavailable')
       if (!registry || typeof registry.getAvailable !== 'function') throw new Error('model catalogue unavailable')
       const scoped = Array.isArray(ctx.scopedModels) ? ctx.scopedModels : []
-      const available = scoped.length ? scoped.map(item => item.model) : registry.getAvailable()
-      const models: NativeModelChoice[] = available.map(item => ({ provider: item.provider, id: item.id, name: item.name ?? item.id }))
+      const all = registry.getAvailable()
+      const available = scoped.length ? scoped.map(item => item.model) : all
+      const toChoice = (item: { provider: string; id: string; name?: string }): NativeModelChoice => ({ provider: item.provider, id: item.id, name: item.name ?? item.id })
+      const models: NativeModelChoice[] = available.map(toChoice), allModels: NativeModelChoice[] = all.map(toChoice)
       const target = identity(), level = ctx.thinkingLevel
       if (model && typeof getSupportedThinkingLevels !== 'function') throw new Error('thinking-level catalogue unavailable')
       const thinkingLevels = model ? getSupportedThinkingLevels(model) : []
-      return { state: { ...target, processGeneration, sequence: nextSequence(), model: model ? { provider: model.provider, id: model.id, name: model.name ?? model.id } : null, models, thinkingLevel: level, thinkingLevels, busy: !ctx.isIdle() || ctx.hasPendingMessages() }, error: null }
+      return { state: { ...target, processGeneration, sequence: nextSequence(), model: model ? { provider: model.provider, id: model.id, name: model.name ?? model.id } : null, models, allModels, scoped: scoped.length > 0, thinkingLevel: level, thinkingLevels, busy: !ctx.isIdle() || ctx.hasPendingMessages() }, error: null }
     } catch (error) { return { state: null, error: error instanceof Error ? error.message : String(error) } }
   }
   const publishState = async () => {

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { NativeModelChoice, NativeModelState, NativeModelStateResult, NativePiEnvelope, NativePiSnapshot, NativeSessionTarget, NativeThinkingLevel, NativeTransportStatus, SnapshotRequest, Stop, Json } from '../../shared/native-pi.ts'
 import { isNativeThinkingLevel } from '../../shared/native-pi-validation.ts'
 import { createRpcMessageStream } from './rpc-message-stream.ts'
+import { readEnabledModelPatterns, resolveScopedModels } from './scoped-models.ts'
 import { projectRpcSnapshot } from './rpc-snapshot.ts'
 import type { RpcRecord, RpcTransport } from './rpc-transport.ts'
 
@@ -156,6 +157,7 @@ export function createRpcProjection(rpc: RpcTransport, processGeneration: number
       const models = modelsData.models.map(choice)
       if (models.some((item) => item === null) || !levelsData.levels.every(isNativeThinkingLevel)) throw new Error('Invalid Pi RPC model or thinking-level value')
       const active = choice(native.model)
+      const scopedList = resolveScopedModels(await readEnabledModelPatterns(), models as NativeModelChoice[])
       if (native.model !== undefined && native.model !== null && active === null) throw new Error('Invalid Pi RPC active model')
       if (!isNativeThinkingLevel(native.thinkingLevel)) throw new Error('Pi session or model state changed during refresh')
       const thinkingLevel = native.thinkingLevel
@@ -168,7 +170,7 @@ export function createRpcProjection(rpc: RpcTransport, processGeneration: number
       }
       const stateValue: NativeModelState = {
         sessionId: native.sessionId, sessionGeneration: activeTarget.sessionGeneration, processGeneration, sequence,
-        model: active, models: models as NativeModelChoice[], thinkingLevel, thinkingLevels: levelsData.levels as NativeThinkingLevel[],
+        model: active, models: scopedList.length ? scopedList : models as NativeModelChoice[], allModels: models as NativeModelChoice[], scoped: scopedList.length > 0, thinkingLevel, thinkingLevels: levelsData.levels as NativeThinkingLevel[],
         busy: native.isStreaming || native.isCompacting || native.pendingMessageCount > 0,
       }
       return { state: stateValue, error: null }

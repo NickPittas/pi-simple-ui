@@ -116,6 +116,7 @@ describe('simple request validators', () => {
 const modelState = {
   sessionId: 's', sessionGeneration: 0, processGeneration: 0, sequence: 0,
   model: { provider: 'p', id: 'm', name: 'M' }, models: [{ provider: 'p', id: 'm', name: 'M' }],
+  allModels: [{ provider: 'p', id: 'm', name: 'M' }], scoped: false,
   thinkingLevel: 'low', thinkingLevels: ['off', 'low'], busy: false,
 }
 
@@ -125,6 +126,14 @@ describe('isNativePiModelStateResult', () => {
     expect(isNativePiModelStateResult({ state: null, error: null })).toBe(false)
     expect(isNativePiModelStateResult({ state: modelState, error: null })).toBe(true)
     expect(isNativePiModelStateResult({ state: modelState, error: 'x' })).toBe(false)
+  })
+
+  it('requires allModels and boolean scoped, rejects extra keys', () => {
+    const { allModels: _a, ...noAll } = modelState
+    expect(isNativePiModelStateResult({ state: { ...modelState, scoped: true }, error: null })).toBe(true)
+    expect(isNativePiModelStateResult({ state: noAll, error: null })).toBe(false)
+    expect(isNativePiModelStateResult({ state: { ...modelState, scoped: 'yes' }, error: null })).toBe(false)
+    expect(isNativePiModelStateResult({ state: { ...modelState, extra: 1 }, error: null })).toBe(false)
   })
 })
 
