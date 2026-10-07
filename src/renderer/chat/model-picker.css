@@ -1,10 +1,10 @@
 .model-picker { position: relative; display: inline-flex; align-items: center; gap: 7px; }
 .model-picker-button { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 3px 8px; border: 1px solid var(--c-surface1); border-radius: 5px; color: var(--c-subtext1); background: var(--c-surface0); font: inherit; cursor: pointer; }
 .model-picker-button:disabled { opacity: .45; cursor: not-allowed; }
-.model-picker-popover { position: absolute; bottom: calc(100% + 6px); left: 0; z-index: 40; width: 300px; display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--c-surface1); border-radius: 8px; background: var(--c-base); box-shadow: 0 12px 40px rgb(0 0 0 / .6); }
+.model-picker-popover { position: absolute; top: calc(100% + 6px); right: 0; z-index: 40; width: min(340px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--c-surface1); border-radius: 8px; background: var(--c-base); box-shadow: 0 12px 40px rgb(0 0 0 / .6); }
 .model-picker-popover input { padding: 5px 8px; border: 1px solid var(--c-surface1); border-radius: 5px; color: var(--c-text); background: var(--c-surface0); font: inherit; }
 .model-picker-popover input:focus { outline: 1px solid var(--c-blue); }
-.model-picker-popover ul { list-style: none; margin: 0; padding: 0; max-height: 240px; overflow-y: auto; }
+.model-picker-popover ul { list-style: none; margin: 0; padding: 0; max-height: min(320px, calc(100vh - 200px)); overflow-y: auto; }
 .model-picker-popover li { padding: 5px 8px; border-radius: 4px; color: var(--c-subtext1); cursor: pointer; font-family: var(--font-mono); }
 .model-picker-popover li.is-active { color: var(--c-text); background: var(--c-surface0); box-shadow: inset 2px 0 var(--c-blue); }
 .model-picker-popover li.model-picker-empty { cursor: default; color: var(--c-subtext0); }
