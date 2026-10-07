@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain, session } from 'electron'
 import { join } from 'node:path'
 import type { AuthorizedIpcCaller } from './ipc/register.ts'
 import { AppPreferencesStore } from './config/app-preferences.ts'
+import { pruneStagedAttachments } from './ipc/staged-attachments.ts'
 import { createNativeMainComposition } from './native-compose.ts'
 import { installSessionSecurityPolicy, installWindowSecurityPolicy, isTrustedMainFrame, type RendererPolicy } from './security/window-policy.ts'
 
@@ -96,6 +97,7 @@ async function createMainWindow(): Promise<BrowserWindow> {
 }
 
 app.whenReady().then(async () => {
+  void pruneStagedAttachments()
   installSessionSecurityPolicy(session.defaultSession, rendererPolicy)
   const appPreferencesStore = new AppPreferencesStore(join(app.getPath('userData'), 'app-preferences.json'))
   composition = createNativeMainComposition({

@@ -78,7 +78,7 @@ export function projectNativeSession(
         else if (block.type === 'thinking' && typeof block.thinking === 'string') push(entry, `thinking:${index++}`, 'thinking', block.thinking);
         else if (block.type === 'toolCall' && typeof block.id === 'string' && typeof block.name === 'string') {
           const result = results.get(block.id);
-          const tool: NativeToolCall = { id: block.id, toolCallId: block.id, name: block.name, arguments: block.arguments ?? null, status: result === undefined ? 'running' : isRecord(result) && result.isError === true ? 'error' : 'completed', ...(result === undefined ? {} : { result: textOf(result), ...detailsOf(result) }) };
+          const tool: NativeToolCall = { id: block.id, toolCallId: block.id, name: block.name, arguments: block.arguments ?? null, status: result === undefined ? 'running' : isRecord(result) && result.isError === true ? 'error' : 'completed', ...(result === undefined ? {} : { result: textOf(isRecord(result) && result.content !== undefined ? result.content : result), ...detailsOf(result) }) };
           push(entry, `tool:${index++}`, 'assistant', '', { toolCalls: [tool] });
         } else push(entry, `unknown:${index++}`, 'system', `Unsupported content (${String(block.type ?? 'missing')}): ${textOf(block)}`);
       }
