@@ -4,7 +4,7 @@
 
 **MANDATORY USER RULE FOR EVERY CURRENT AND FUTURE IMPLEMENTATION AGENT:** “NEVER create or run tests for an unverified feature. Implement → review → fix → confirm actual working feature → only then user-authorized regression tests.” Typechecks and file existence are not confirmation that a feature works. Do not create tests for unverified features, do not use tests to stand in for feature confirmation, and do not run test suites before the feature has been confirmed and the user has authorized regression coverage.
 
-There are no tests, test suites, browser smoke checks, or packaging reviews in the current deliverables. Do not add test plans disguised as verification or acceptance tasks. Keep this rule in force for all implementation work unless the user explicitly changes it.
+A Vitest regression suite (`npm test`) now exists, authorized by the user on 2026-10-07 for features the user confirmed working in the running app (attachments, inline command notices, validators, conversation projection, model scope). The rule above still applies to every new feature: no tests for an unverified feature, and no test plans disguised as verification. Add or extend tests only after the user confirms the feature, and keep this suite green. Typechecks and passing tests do not confirm a feature works.
 
 ## Herdr ownership boundary
 
