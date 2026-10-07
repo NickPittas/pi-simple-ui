@@ -105,6 +105,9 @@ export type NativeCommandSourceInfo = {
 }
 export type NativeCommandEntry = { name: string; description: string | null; source: NativeCommandSource; sourceInfo?: NativeCommandSourceInfo | null }
 export type NativeCommandsResult = { commands: NativeCommandEntry[]; error: string | null }
+/** Stages a user-chosen file in a temp dir so its absolute path can be referenced in a Pi prompt (Pi's own paste behavior). */
+export type StageAttachmentRequest = { name: string; bytesBase64: string }
+export type StageAttachmentResult = { path: string }
 export type AbortRequest = NativeSessionTarget & { requestId: string }
 export type SetModelRequest = NativeSessionTarget & { requestId: string; provider: string; modelId: string }
 export type SetThinkingRequest = NativeSessionTarget & { requestId: string; level: NativeThinkingLevel }
@@ -148,6 +151,7 @@ declare module './ipc-contracts.ts' {
     'native.pi.abort': { readonly request: AbortRequest; readonly response: NativePiAck }
     'native.pi.open-session': { readonly request: OpenSessionRequest; readonly response: OpenSessionResult }
     'native.pi.terminal-input': { readonly request: TerminalInput; readonly response: NativePiAck }
+    'native.pi.stage-attachment': { readonly request: StageAttachmentRequest; readonly response: StageAttachmentResult }
     'native.pi.terminal-resize': { readonly request: TerminalSize; readonly response: null }
   }
   interface IpcEventContracts {

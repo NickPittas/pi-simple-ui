@@ -1,4 +1,9 @@
+import { randomUUID } from 'node:crypto'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { basename, join } from 'node:path'
 import type { CapabilityDefinition, EventDefinition } from './register.ts'
+import { CONTENT_LIMITS } from '../../shared/content.ts'
 import { hasExactKeys, isPlainRecord, type RuntimeScope } from '../../shared/ipc-contracts.ts'
 import {
   isNativePiEnvelope,
@@ -29,6 +34,8 @@ import type {
   OpenSessionResult,
   SetModelRequest,
   SetThinkingRequest,
+  StageAttachmentRequest,
+  StageAttachmentResult,
   NativeTransportStatus,
   SnapshotRequest,
   SubmitRequest,
@@ -44,6 +51,14 @@ export interface NativePiOperations {
   workspaceSnapshot(): WorkspaceSnapshot
   openSession(request: OpenSessionRequest): Promise<{ outcome: 'opened'; processGeneration: number } | { outcome: 'failed'; reason: string }>
 }
+
+const isStageAttachmentRequest = (value: unknown): value is StageAttachmentRequest => isPlainRecord(value)
+  && hasExactKeys(value, ['name', 'bytesBase64'])
+  && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= CONTENT_LIMITS.attachmentNameCharacters
+  && typeof value.bytesBase64 === 'string' && value.bytesBase64.length <= CONTENT_LIMITS.attachmentBase64Characters
+  && /^[A-Za-z0-9+/]*={0,2}$/.test(value.bytesBase64)
+const isStageAttachmentResult = (value: unknown): value is StageAttachmentResult => isPlainRecord(value)
+  && hasExactKeys(value, ['path']) && typeof value.path === 'string' && value.path.length > 0
 
 const isEmptyRequest = (value: unknown): value is Record<string, never> => isPlainRecord(value) && hasExactKeys(value, [])
 
@@ -152,6 +167,20 @@ export function registerNativePiCapabilities(operations: NativePiOperations): Ca
         if (operations.activeHost() !== host || host.scope.processGeneration !== requireScope(scope).generation) throw new Error('The native runtime scope is no longer current.')
         if (!isNativePiAck(reply.value) || reply.value.requestId !== request.requestId) throw new Error('Native abort is unavailable.')
         return reply.value
+      },
+    },
+    {
+      id: 'native.pi.stage-attachment', scope: 'runtime', validateRequest: isStageAttachmentRequest, validateResponse: isStageAttachmentResult,
+      handle: async ({ scope }, request) => {
+        ownedHost(operations, scope)
+        const bytes = Buffer.from(request.bytesBase64, 'base64')
+        if (bytes.byteLength > CONTENT_LIMITS.attachmentBytes) throw new Error('The attachment is too large.')
+        const safeName = basename(request.name).replace(/[^\w.-]+/g, '_').slice(-120) || 'attachment'
+        const dir = join(tmpdir(), 'pi-gui-attachments')
+        await mkdir(dir, { recursive: true, mode: 0o700 })
+        const path = join(dir, `${randomUUID()}-${safeName}`)
+        await writeFile(path, bytes, { mode: 0o600 })
+        return { path }
       },
     },
     {

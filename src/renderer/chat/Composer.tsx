@@ -69,8 +69,30 @@ export function Composer({ bridge, scope, nativeSubmit, nativeAbort, sessionId, 
       : await invoke(capability, { text, attachments: images });
     if (result?.ok && result.value.accepted) { update(''); setAttachments([]); }
   };
+  const stageFiles = async (files: FileList | File[]) => {
+    if (!bridge || !scope) { setAttachmentError('Attachments are unavailable without an active runtime.'); return; }
+    setAttachmentError(null);
+    const paths: string[] = [];
+    for (const file of Array.from(files)) {
+      const direct = bridge.pathForFile?.(file);
+      if (direct) { paths.push(direct); continue; }
+      if (!isAttachmentSizeWithinLimit(file.size)) { setAttachmentError(`${file.name || 'File'} is too large.`); continue; }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      let binary = ''; for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      const ext = file.name.includes('.') ? '' : (file.type.split('/')[1] ?? '').replace(/[^a-z0-9]/gi, '');
+      const result = await bridge.invoke('native.pi.stage-attachment', { name: (file.name || 'pasted-image') + (ext ? `.${ext}` : ''), bytesBase64: btoa(binary) }, scope);
+      if (result.ok) paths.push(result.value.path); else setAttachmentError(result.error.message);
+    }
+    if (!paths.length) return;
+    const node = textarea.current;
+    const start = node?.selectionStart ?? text.length, end = node?.selectionEnd ?? start;
+    const before = text.slice(0, start), after = text.slice(end);
+    const insert = (before && !/\s$/.test(before) ? ' ' : '') + paths.join('\n') + (after && !/^\s/.test(after) ? ' ' : '');
+    update(before + insert + after, start + insert.length);
+    requestAnimationFrame(() => { node?.focus(); node?.setSelectionRange(start + insert.length, start + insert.length); });
+  };
   const processFiles = async (files: FileList | File[]) => {
-    if (nativeSubmit) return;
+    if (nativeSubmit) return stageFiles(files);
     setAttachmentError(null);
     for (const file of Array.from(files)) {
       if (attachmentTypeForName(file.name)?.category !== 'image') { setAttachmentError(`${file.name} is not supported here. Only image attachments can be sent.`); continue; }
@@ -85,16 +107,16 @@ export function Composer({ bridge, scope, nativeSubmit, nativeAbort, sessionId, 
     if (event.key === '/' && text.length === 0) setPalette(true);
     if (event.key === 'Escape') setPalette(false);
   };
-  const paste = (event: ClipboardEvent<HTMLTextAreaElement>) => { if (nativeSubmit) return; const files = Array.from(event.clipboardData.files); if (files.length) { event.preventDefault(); void processFiles(files); } };
-  const drop = (event: DragEvent<HTMLDivElement>) => { if (nativeSubmit) return; event.preventDefault(); void processFiles(event.dataTransfer.files); };
-  return <div className="chat-composer" onDragOver={(event) => { if (!nativeSubmit) event.preventDefault(); }} onDrop={drop}>
+  const paste = (event: ClipboardEvent<HTMLTextAreaElement>) => { const files = Array.from(event.clipboardData.files); if (files.length) { event.preventDefault(); void processFiles(files); } };
+  const drop = (event: DragEvent<HTMLDivElement>) => { event.preventDefault(); void processFiles(event.dataTransfer.files); };
+  return <div className="chat-composer" onDragOver={(event) => event.preventDefault()} onDrop={drop}>
     {!nativeSubmit && attachments.map((item) => <AttachmentPreview key={item.chatAttachment.path} attachment={item.preview} onRemove={() => setAttachments((all) => all.filter((entry) => entry !== item))} />)}
-    {!nativeSubmit && attachmentError && <p className="chat-composer-error" role="alert">{attachmentError}</p>}
+    {attachmentError && <p className="chat-composer-error" role="alert">{attachmentError}</p>}
     <label className="chat-composer-label" htmlFor={`composer-${sessionId}`}>Message</label>
       <textarea id={`composer-${sessionId}`} ref={textarea} value={text} rows={1} placeholder="Write a message…" aria-keyshortcuts="Enter Shift+Enter Escape" onChange={(event) => { update(event.target.value, event.currentTarget.selectionStart, event.currentTarget.selectionEnd); event.currentTarget.style.height = 'auto'; event.currentTarget.style.height = `${Math.min(event.currentTarget.scrollHeight, 280)}px`; }} onSelect={(event) => onEditorStateChange?.({ sessionId, text, selectionStart: event.currentTarget.selectionStart, selectionEnd: event.currentTarget.selectionEnd, origin: 'renderer' })} onKeyDown={keyDown} onPaste={paste} aria-describedby="composer-hint" />
     <div className="chat-composer-controls"><span id="composer-hint">Enter to send · Shift+Enter for a new line</span><div>
-      <input className="chat-file-input" id={`attachment-${sessionId}`} type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple disabled={Boolean(nativeSubmit)} onChange={(event) => { if (event.currentTarget.files) void processFiles(event.currentTarget.files); event.currentTarget.value = ''; }} />
-      <label className="chat-control-button" htmlFor={`attachment-${sessionId}`} title={nativeSubmit ? 'Not supported yet' : undefined}>{nativeSubmit ? 'Attach image (not supported yet)' : 'Attach image'}</label>
+      <input className="chat-file-input" id={`attachment-${sessionId}`} type="file" accept={nativeSubmit ? undefined : "image/png,image/jpeg,image/gif,image/webp"} multiple onChange={(event) => { if (event.currentTarget.files) void processFiles(event.currentTarget.files); event.currentTarget.value = ''; }} />
+      <label className="chat-control-button" htmlFor={`attachment-${sessionId}`} title={nativeSubmit ? 'Adds the file path to your message' : undefined}>{nativeSubmit ? 'Attach file' : 'Attach image'}</label>
       <button type="button" className="chat-control-button" onClick={() => setPalette(true)}>Commands</button>
       {busy && <button className="chat-stop-button" type="button" disabled={Boolean(nativeSubmit) && !nativeAbort} onClick={() => { if (nativeSubmit) { if (nativeAbort) void nativeAbort().then((ack) => { if (ack.outcome !== 'accepted') onError?.(ack.reason ?? `Stop ${ack.outcome}.`); }).catch((error) => onError?.(error instanceof Error ? error.message : 'Stop failed.')); } else if (bridge && scope) void bridge.invoke(CHAT_IPC.abort, {}, scope).then((result) => { if (!result.ok) onError?.(result.error.message); }); }}>Stop</button>}
       {busy && !nativeSubmit && <label className="chat-send-mode"><input type="radio" name={`mode-${sessionId}`} checked={behavior === 'steer'} onChange={() => setBehavior('steer')} />Send now</label>}

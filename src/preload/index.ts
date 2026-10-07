@@ -12,7 +12,7 @@ import {
 
 // Electron's sandboxed preload runner executes a script, not an ESM module. Keep the
 // only external dependency on its restricted sandbox require allowlist.
-const { contextBridge, ipcRenderer } = require('electron') as typeof import('electron')
+const { contextBridge, ipcRenderer, webUtils } = require('electron') as typeof import('electron')
 
 declare const __APP_NAME__: string
 declare const __APP_VERSION__: string
@@ -114,7 +114,12 @@ window.addEventListener('pagehide', () => {
   subscriptions.clear()
 })
 
-const bridge: DesktopBridge = Object.freeze({ appInfo, invoke, subscribe })
+const bridge: DesktopBridge = Object.freeze({
+  appInfo,
+  invoke,
+  subscribe,
+  pathForFile: (file: File): string => { try { return webUtils.getPathForFile(file) } catch { return '' } },
+})
 
 contextBridge.exposeInMainWorld(
   'piDesktop',

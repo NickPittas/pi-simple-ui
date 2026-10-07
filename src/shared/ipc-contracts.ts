@@ -68,6 +68,8 @@ export interface EventEnvelope {
 
 export interface DesktopBridge {
   readonly appInfo: Readonly<{ name: string; version: string }>
+  /** Absolute on-disk path of a user-chosen File, or '' for in-memory files (e.g. clipboard images). */
+  pathForFile?(file: File): string
   invoke<K extends CapabilityId>(
     capability: K,
     payload: CapabilityRequest<K>,
